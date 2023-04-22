@@ -1,13 +1,17 @@
 import type { TelegrafContext } from "telegraf/typings/context"
 import { createModal } from "./chain"
 
-export const createContext = async (ctx: TelegrafContext) => {
-    const model = createModal()
-    // eslint-disable-next-line @typescript-eslint/await-thenable, @typescript-eslint/no-unsafe-return
-    return await ({
-        model,
-        ...ctx
-    })
+export type CustomContext = TelegrafContext & {
+    model?: ReturnType<typeof createModal>
 }
 
-export type Context = ReturnType<typeof createContext>
+export const createContext = (ctx: TelegrafContext): CustomContext => {
+    const model = createModal()
+
+    return ({
+        model,
+        ...ctx
+    }) as CustomContext
+}
+
+// export type Context = ReturnType<typeof createContext>

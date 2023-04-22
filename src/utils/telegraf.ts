@@ -3,6 +3,7 @@ import Telegraf from "telegraf"
 import type { TelegrafContext } from "telegraf/typings/context"
 import type { Update } from "telegraf/typings/telegram-types"
 import logger from "./logger"
+import { type CustomContext } from "./context"
 
 export type ApiHandler = (ctx: TelegrafContext) => Promise<void>;
 
@@ -22,16 +23,16 @@ export interface TelegramApiOptions {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type CreateTelegrafContext = (ctx: TelegrafContext) => Promise<TelegrafContext & any>
+export type CreateTelegrafContext = (ctx: TelegrafContext) => CustomContext
 
 export const getBot = (apiKey: string, router: ApiRouter, createContext?: CreateTelegrafContext) => {
     const bot = new Telegraf(apiKey)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function withContext(handler: (ctx: TelegrafContext & any) => Promise<void>) {
+    function withContext(handler: (ctx: CustomContext) => Promise<void>) {
         if (createContext) {
             return async (ctx: TelegrafContext) => {
-                await handler(await createContext(ctx))
+                await handler(createContext(ctx))
             }
         }
 
